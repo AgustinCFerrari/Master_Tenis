@@ -1,0 +1,301 @@
+doctype html
+html(lang="es")
+  head 
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    title Tenis Master - Reservar cancha
+    link(href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet")
+    style.
+      html,body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;}
+      body{
+           background-image:url('images/cancha.jpg');
+           background-size:cover;
+           background-position:center;
+           background-repeat:no-repeat;
+           background-attachment:fixed;
+      }
+      .container-mx{max-width:1100px;margin:0 auto;}
+      .card{border:1px solid #e5e7eb;border-radius:1rem;background:#ffffffcc;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+      .btn-primary{background:#2E7D32;color:#fff;border-radius:.75rem;padding:.75rem 1rem;font-weight:600;display:inline-block}
+      .label{font-size:.8rem;color:#4b5563;}
+      .input{margin-top:.25rem;width:100%;border-radius:.5rem;border:1px solid #d1d5db;padding:.5rem .75rem;}
+      .bg-blur{background:#ffffffcc;backdrop-filter:blur(4px);border-radius:.5rem;}
+  body
+    header.topbar.bg-blur
+      .container-mx.px-4.py-3.flex.items-center.justify-between
+        img(src="/images/logo-tenis-master.svg" alt="Tenis Master" class="h-8 md:h-9 w-auto")
+        nav.flex.items-center.gap-3.text-sm
+          a(href="/panel-reservas" class="px-3 py-2 rounded bg-gray-200") Ver reservas
+          a(href="/panel" class="px-3 py-2 rounded bg-gray-200") Volver
+          form(action="/logout" method="POST")
+            button(type="submit" class="px-3 py-1 text-red-700 hover:underline") Salir
+
+    main.container-mx.px-4.py-8
+      h2(class="text-3xl font-semibold text-white text-center block mb-6") Reservar cancha
+      if mensaje
+        .bg-yellow-50.border.border-yellow-200.rounded-lg.p-3.text-yellow-800.mb-4 #{mensaje}
+
+      .card.p-6
+        form(action="/reservar" method="POST" class="space-y-6" id="form-reserva")
+          //- CLIENTE: se reserva a sí mismo (fijo)
+          if usuario && usuario.rol === 'cliente'
+            .grid.gap-4(class="md:grid-cols-2" style="margin-bottom:.5rem;")
+              div
+                label.label Apellido
+                input(
+                  type="text"
+                  readonly
+                  value=usuario.apellido || ''
+                  class="input bg-gray-100 text-gray-500 cursor-not-allowed"
+                )
+              div
+                label.label Nombre
+                input(
+                  type="text"
+                  readonly
+                  value=usuario.nombre || ''
+                  class="input bg-gray-100 text-gray-500 cursor-not-allowed"
+                )
+
+          //- ADMIN / EMPLEADO: SIEMPRE select Apellido/Nombre (editable), con sugerencia si viene de macheo
+          else
+            .grid.gap-4(class="md:grid-cols-3" style="margin-bottom:.25rem;")
+              div
+                label.label Apellido (cliente)
+                select#sel-apellido(name="apellido" class="input")
+                  option(value="") Seleccionar
+                  if apellidos && apellidos.length
+                    each ap in apellidos
+                      option(value=ap)= ap
+              div
+                label.label Nombre (cliente)
+                select#sel-nombre(name="nombre" class="input")
+                  option(value="") Seleccionar
+              //- hidden que se llena al elegir el nombre
+              input#jugadorId(type="hidden" name="jugadorId")
+
+            if vieneDeMacheo && (sugerido && (sugerido.apellido || sugerido.nombre))
+              p.text-xs.text-gray-500(style="margin-top:-.4rem;")
+                | Sugerido (macheo): 
+                span #{sugerido.apellido || ''} #{sugerido.nombre || ''}
+
+          //- 2) CAMPOS DEL OPONENTE (SE MUEVEN FUERA PARA QUE CLIENTE TAMBIÉN LOS VEA) ----
+          if vieneDeMacheo
+            .grid.gap-4(class="md:grid-cols-2")
+              div
+                label.label Oponente – Apellido (no obligatorio)
+                input#oponente-apellido(
+                  type="text"
+                  name="oponenteApellido"
+                  class="input"
+                  value=(macheo && macheo.apellido ? macheo.apellido : '')
+                  placeholder="Ej: Pérez"
+                )
+              div
+                label.label Oponente – Nombre (no obligatorio)
+                input#oponente-nombre(
+                  type="text"
+                  name="oponenteNombre"
+                  class="input"
+                  value=(macheo && macheo.nombre ? macheo.nombre : '')
+                  placeholder="Ej: Juan"
+                )
+            .grid.gap-4(class="md:grid-cols-2")
+              div
+                label.label Día de la semana (no editable)
+                input#inp-dia-semana(
+                  type="text"
+                  readonly
+                  class="input bg-gray-100 text-gray-500 cursor-not-allowed"
+                  value=(macheo && macheo.diaSemana ? macheo.diaSemana : '')
+                  placeholder="(día seleccionado en macheo)"
+                )
+
+          //- 2) FECHA + 3) HORARIOS
+          .grid.gap-4(class="md:grid-cols-3")
+            div
+              label.label Fecha
+              input#inp-fecha(
+                type="date"
+                name="fecha"
+                required
+                class="input"
+                value=""
+              )
+
+            div
+              label.label Hora inicio
+              input#inp-hora-inicio(
+                type="time"
+                name="horaInicio"
+                required
+                class="input"
+                value=macheo && macheo.horaInicio ? macheo.horaInicio : ''
+              )
+            div
+              label.label Hora fin
+              input#inp-hora-fin(
+                type="time"
+                name="horaFin"
+                required
+                class="input"
+                value=macheo && macheo.horaFin ? macheo.horaFin : ''
+              )
+
+          div
+            label.label Cancha
+            select(name="cancha" required class="input")
+              option(value="Cancha 1") Cancha 1
+              option(value="Cancha 2") Cancha 2
+              option(value="Cancha 3") Cancha 3
+              option(value="Cancha 4") Cancha 4
+
+          .flex.justify-end
+            button(type="submit" class="btn-primary") Confirmar reserva
+
+          // Pequeño toast/overlay (oculto de inicio)
+          div#toast-notificacion(
+            class="fixed inset-0 hidden items-center justify-center"
+            style="background:rgba(0,0,0,.35);z-index:9999;"
+          )
+            .bg-white.rounded-xl.shadow-lg.p-6.text-center(style="max-width:420px;")
+              h3.text-lg.font-semibold.text-gray-900 Notificación enviada
+              p.text-sm.text-gray-700.mt-2
+                | Se notificó por mail al rival sobre tu reserva.
+              p.text-xs.text-gray-500.mt-1
+                | Redirigiendo al panel de reservas...
+
+    // ---------- SCRIPT FRONT ----------
+    script.
+      (function(){
+        const rol = "#{usuario ? usuario.rol : ''}";
+        const sugerido = !{JSON.stringify(sugerido || {})};
+        const vieneDeMacheo = #{vieneDeMacheo ? true : false};
+        const hoy = new Date();
+
+        // --- Util: formatear YYYY-MM-DD ---
+        function fmtDate(d){
+          const y = d.getFullYear();
+          const m = String(d.getMonth()+1).padStart(2,'0');
+          const da = String(d.getDate()).padStart(2,'0');
+          return `${y}-${m}-${da}`;
+        }
+
+        // --- Referencias a inputs ---
+        const inpFecha = document.getElementById('inp-fecha');
+        const inpHoraInicio = document.getElementById('inp-hora-inicio');
+        const inpHoraFin = document.getElementById('inp-hora-fin');
+        const inpDiaSemana = document.getElementById('inp-dia-semana');
+
+        // --- Setear min en fecha (no fechas pasadas) ---
+        if (inpFecha) {
+          const hoyStr = fmtDate(hoy);
+          inpFecha.min = hoyStr; // esto "grisa" días anteriores en el datepicker
+        }
+
+        // --- Actualizar límites de horario según fecha seleccionada ---
+        function actualizarLimitesHora(){
+          if (!inpFecha || !inpHoraInicio || !inpHoraFin) return;
+          const sel = inpFecha.value;
+          if (!sel) {
+            inpHoraInicio.min = "";
+            inpHoraFin.min = "";
+            return;
+          }
+
+          const hoyStr = fmtDate(hoy);
+          if (sel === hoyStr) {
+            // Día de hoy: hora inicio no puede ser pasada
+            const h = String(hoy.getHours()).padStart(2,'0');
+            const m = String(hoy.getMinutes()).padStart(2,'0');
+            const ahoraHM = `${h}:${m}`;
+            inpHoraInicio.min = ahoraHM;
+            if (inpHoraInicio.value && inpHoraInicio.value < ahoraHM) {
+              inpHoraInicio.value = ahoraHM;
+            }
+          } else {
+            // Día futuro: libre (>= 00:00)
+            inpHoraInicio.min = "00:00";
+          }
+
+          // Hora fin siempre debe ser > inicio
+          const inicio = inpHoraInicio.value || inpHoraInicio.min || "00:00";
+          inpHoraFin.min = inicio;
+          if (inpHoraFin.value && inpHoraFin.value <= inicio) {
+            inpHoraFin.value = "";
+          }
+        }
+
+        inpFecha && inpFecha.addEventListener('change', actualizarLimitesHora);
+        inpHoraInicio && inpHoraInicio.addEventListener('change', actualizarLimitesHora);
+
+        // --- Inicializar en carga ---
+        actualizarLimitesHora();
+
+        // --- Lógica selects cliente (para admin/empleado) ---
+        if (rol !== 'cliente') {
+          const selApellido = document.getElementById('sel-apellido');
+          const selNombre = document.getElementById('sel-nombre');
+          const jugadorId = document.getElementById('jugadorId');
+
+          async function loadNombres(apellido){
+            selNombre.innerHTML = '<option value="">Seleccionar</option>';
+            jugadorId.value = '';
+            if (!apellido) return;
+
+            try {
+              const res = await fetch('/api/clientes/nombres?apellido=' + encodeURIComponent(apellido));
+              if (!res.ok) {
+                console.error('Error al cargar nombres:', res.status);
+                return;
+              }
+              const data = await res.json();
+
+              data.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u.nombre;
+                opt.textContent = u.nombre;
+                opt.dataset.id = u.id;
+                selNombre.appendChild(opt);
+              });
+            } catch (err) {
+              console.error('Error en loadNombres:', err);
+            }
+          }
+
+          selApellido && selApellido.addEventListener('change', e => {
+            loadNombres(e.target.value);
+          });
+
+          selNombre && selNombre.addEventListener('change', e => {
+            const opt = e.target.selectedOptions[0];
+            jugadorId.value = opt && opt.dataset.id ? opt.dataset.id : '';
+          });
+        }
+
+        // ---------- Aviso previo y submit (solo si viene de macheo) ----------
+        if (vieneDeMacheo) {
+          const form = document.getElementById('form-reserva');
+          const toast = document.getElementById('toast-notificacion');
+
+          if (form) {
+            form.addEventListener('submit', function (e) {
+              e.preventDefault();
+
+              if (toast) {
+                toast.classList.remove('hidden');
+                toast.classList.add('flex');
+              }
+
+              setTimeout(() => {
+                form.submit();
+              }, 1200);
+            }, { once: true });
+          }
+        }
+
+        // --- Día de la semana: en este punto solo mostramos lo que vino de macheo ---
+        // Ya lo seteamos desde el servidor en el value del input readonly,
+        // así que NO hace falta más lógica JS acá para eso.
+
+      })();

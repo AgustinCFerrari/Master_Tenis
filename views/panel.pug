@@ -1,0 +1,96 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    title Tenis Master – Panel de inicio
+    link(rel="stylesheet", href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css")
+    style.
+      html,body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;}
+      body {
+        background-image: url('/images/fondo1.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      .container-mx{max-width:1200px;margin:0 auto;}
+      .card{border:1px solid #e5e7eb;border-radius:1rem;background:#ffffffcc;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+      .btn-primary{background:#2E7D32;color:#fff;border-radius:.75rem;font-weight:600;}
+      .btn-secondary{background:#1976D2;color:#fff;border-radius:.75rem;font-weight:600;}
+      .btn-primary,.btn-secondary{min-width:100px;text-align:center;padding:.75rem 1rem;display:inline-block;}
+      .topbar{position:sticky;top:0;z-index:40;background:#ffffffcc;border-bottom:1px solid #e5e7eb;}
+      .bg-blur{background:#ffffffcc;backdrop-filter:blur(4px);border-radius:.5rem;}
+  body.bg-gray-50
+    noscript
+      div(style="background:#fee2e2;color:#991b1b;padding:12px;text-align:center;")
+        | Necesitás activar JavaScript para usar esta página.
+
+    header.topbar.bg-blur
+      .container-mx.px-4.py-3.flex.items-center.justify-between
+        img(src="/images/logo-tenis-master.svg" alt="Tenis Master" class="h-8 md:h-9 w-auto" onerror="this.style.display='none'")
+        span(class="text-xs text-center border rounded-full px-2 py-1")
+          | Usuario:  
+          if usuario && usuario.rol === 'cliente'
+            |   
+            strong #{usuario.nombre} #{usuario.apellido} 
+          else 
+            strong #{(usuario && usuario.rol) || '—'}
+        // Botón hamburguesa
+        button#nav-toggle(class="md:hidden inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm text-gray-700" aria-expanded="false" aria-controls="nav-menu")
+          svg(xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16")
+          | Menú
+
+        // Menú
+        nav#nav-menu(class="hidden flex-col gap-8 bg-blur p-4 absolute top-16 left-4 right-4 md:static md:flex md:flex-row md:gap-6 md:bg-transparent md:shadow-none md:p-0")
+          .flex.items-center.gap-4
+            // Visible sólo para empleado/administrador
+            if usuario && (usuario.rol === 'empleado' || usuario.rol === 'administrador')
+              a(href="/usuarios" class="hover:text-gray-900 px-2 py-1") Gestión de Clientes
+            form(action="/logout" method="POST")
+              button(type="submit" class="text-red-700 font-medium hover:underline px-2 py-1") Salir
+
+    main.container-mx.px-8.py-16
+      h2(class="text-3xl font-semibold text-white text-center block mb-6") Panel de inicio
+      section(class="grid gap-12 justify-items-center")
+        article(class="card w-full p-8 md:p-6" style="max-width:550px;")
+          .flex.items-start.justify-between
+            div
+              h2(class="text-lg font-semibold text-gray-900") Reservar cancha
+              p(class="text-gray-600") Elegir fecha, hora y cancha.
+            a.btn-secondary(href="/reservar") Reservar
+            
+        article(class="card w-full p-8 md:p-6" style="max-width:550px;")
+          .flex.items-start.justify-between
+            div
+              h2(class="text-lg font-semibold text-gray-900") Macheo de jugadores
+              p(class="text-gray-600") Por nivel y disponibilidad.
+            a.btn-secondary(href="/macheo") Macheo
+
+        article(class="card w-full p-8 md:p-6" style="max-width:550px;")
+          .flex.items-start.justify-between
+            div
+              h2(class="text-lg font-semibold text-gray-900") Panel de reservas
+              p(class="text-gray-600") Ver historial y próximas reservas.
+            a.btn-secondary(href="/panel-reservas") Ver
+
+
+    footer.border-t
+      .container-mx.px-4.py-6.text-sm.text-gray-700.text-center
+        span(style="color:#d32f2f; background:#ffffffaa; padding:4px 12px; border-radius:6px;")
+          | © RedSoft 2025. Todos los derechos reservados.
+
+    script.
+      // Menú responsive
+      (function(){
+        var btn=document.getElementById('nav-toggle');
+        var menu=document.getElementById('nav-menu');
+        if(btn && menu){
+          btn.addEventListener('click',()=> {
+            var isHidden = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden');
+            btn.setAttribute('aria-expanded', String(isHidden));
+          });
+        }
+      })();

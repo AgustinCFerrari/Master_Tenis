@@ -1,0 +1,100 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    title Tenis Master – Mis reservas
+    link(href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet")
+    style.
+      html,body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;}
+      body {
+        background-image: url('/images/fondo2.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
+      .container-mx{max-width:1200px;margin:0 auto;}
+      .card{border:1px solid #e5e7eb;border-radius:1rem;background:#ffffffcc;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+      .btn-primary{background:#2E7D32;color:#fff;border-radius:.75rem;padding:.5rem 1rem;font-weight:600;display:inline-block;}
+      .topbar{position:sticky;top:0;z-index:40;background:#ffffffcc;border-bottom:1px solid #e5e7eb;}
+      .bg-blur{background:#ffffffcc;backdrop-filter:blur(4px);border-radius:.5rem;}
+
+  body
+    header.topbar.bg-blur
+      .container-mx.px-4.py-3.flex.items-center.justify-between
+        img(src="/images/logo-tenis-master.svg" alt="Tenis Master" class="h-9 w-auto" onerror="this.style.display='none'")
+        span(class="text-xs text-center border rounded-full px-2 py-1")
+          | Cliente:
+          strong
+            | #{(usuario && usuario.apellido) || ''} #{(usuario && usuario.nombre) || ''} 
+        // Botón hamburguesa
+        button#nav-toggle(class="md:hidden inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm text-gray-700" aria-expanded="false" aria-controls="nav-menu")
+          svg(xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16")
+          | Menú
+
+        // Menú
+        nav#nav-menu(class="hidden flex-col gap-8 bg-blur p-4 absolute top-16 left-4 right-4 md:static md:flex md:flex-row md:gap-6 md:bg-transparent md:shadow-none md:p-0")
+          .flex.items-center.gap-4
+            a(href="/panel" class="hover:text-gray-900 px-3 py-1") Inicio
+            a(href="/reservar" class="hover:text-gray-900 px-3 py-1") Reservar
+            a(href="/panel-reservas" class="hover:text-gray-900 px-3 py-1") Macheo
+            form(action="/logout" method="POST" class="flex items-center")
+              button(type="submit" class="text-red-700 font-medium hover:underline px-3 py-1") Salir
+
+    main.container-mx.px-4.py-16
+      h2(class="text-3xl font-semibold text-white text-center mb-2") Mis reservas
+      h3(class="text-md text-white mb-8 font-medium text-center")
+        | Aquí podés ver tus reservas confirmadas y próximas.
+
+      section(class="max-w-3xl mx-auto space-y-4")
+        if reservas && reservas.length
+          each r in reservas
+            - const fecha = new Date(r.fecha);
+            article.card.p-4.flex.items-center.justify-between
+              div
+                h3(class="font-semibold text-gray-900")
+                  | Cancha #{r.cancha.replace('Cancha ','')} – 
+                  | #{fecha.toLocaleDateString('es-AR')} #{r.horaInicio} hs
+                p(class="text-sm text-gray-700")
+                  | Estado:
+                  span(class=(r.estado === 'activa' ? 'text-green-700' : 'text-gray-500')) #{r.estado}
+              if r.estado === 'activa'
+                .flex.gap-2
+                  //- Botón de pago
+                  a(
+                    href=`/reservas/${r._id}/pago`
+                    class="btn-primary"
+                  ) Pagar
+
+                  //- Botón cancelar solo si está activa
+                  form(action=`/reservas/${r._id}/eliminar` method="POST")
+                    button(
+                      type="submit"
+                      class="btn-primary bg-red-700 hover:bg-red-800"
+                      onclick="return confirm('¿Cancelar esta reserva?')"
+                    ) Cancelar
+        else
+          article.card.p-6.text-center.text-gray-700
+            p No tenés reservas registradas.
+            a(href="/reservar" class="btn-primary mt-3") Hacer una reserva
+
+    footer.py-6
+      .container-mx.px-4.py-6.text-sm.text-gray-700.text-center
+        span(style="color:#d32f2f;background:#ffffffaa;padding:4px 12px;border-radius:6px;")
+          | © RedSoft 2025. Todos los derechos reservados.
+    
+    script.
+      // Menú responsive
+      (function(){
+        var btn=document.getElementById('nav-toggle');
+        var menu=document.getElementById('nav-menu');
+        if(btn && menu){
+          btn.addEventListener('click',()=> {
+            var isHidden = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden');
+            btn.setAttribute('aria-expanded', String(isHidden));
+          });
+        }
+      })();

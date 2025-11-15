@@ -1,0 +1,380 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    title Tenis Master – Clientes
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css")
+    style.
+      body{
+        font-family:'Inter',system-ui,sans-serif;
+        background-image:url('/images/fondo2.jpg');
+        background-size:cover;
+        background-position:center;
+        background-repeat:no-repeat;
+        background-attachment:fixed;
+      }
+      .container-mx{max-width:1200px;margin:0 auto;}
+      .card{border:1px solid #e5e7eb;border-radius:1rem;background:#ffffffcc;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+      .btn-primary,.btn-danger{
+        min-width:7.5rem;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        border-radius:.75rem;
+        font-weight:600;
+        padding:.6rem 1rem;
+        color:#fff;
+        cursor:pointer;
+      }
+      .btn-primary{background:#1976D2;}
+      .btn-danger{background:#b71c1c;}
+      .topbar{
+        position:sticky;
+        top:0;
+        z-index:40;
+        background:#ffffffcc;
+        border-bottom:1px solid #e5e7eb;
+        backdrop-filter:blur(6px);
+      }
+      .bg-blur{background:#ffffffcc;backdrop-filter:blur(4px);border-radius:.5rem;}
+      /* Modal */
+      #modal-toggle{display:none;}
+      #modal-toggle:checked + .modal-overlay{display:flex;}
+      .modal-overlay{
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.5);
+        align-items:center;
+        justify-content:center;
+        z-index:50;
+      }
+      .modal{
+        background:#ffffffcc;
+        border-radius:1rem;
+        padding:1.5rem;
+        width:100%;
+        max-width:780px;
+        box-shadow:0 4px 12px rgba(0,0,0,.15);
+      }
+      table.disp-table th,
+      table.disp-table td{
+        font-size:.78rem;
+      }
+
+  body
+    header.topbar
+      .container-mx.px-4.py-3.flex.items-center.justify-between
+        img(src="/images/logo-tenis-master.svg" alt="Tenis Master" class="h-9 w-auto" onerror="this.style.display='none'")
+        nav#nav-menu(class="flex items-center gap-4")
+          a(href="/panel" class="hover:underline px-2 py-1") Volver al panel
+          form(action="/logout" method="POST")
+            button(type="submit" class="text-red-700 font-medium hover:underline px-2 py-1") Salir
+
+    main.container-mx.px-4.py-16
+      h2.text-3xl.font-semibold.text-white.text-center.mb-6 Gestión de clientes
+
+      if mensaje
+        .bg-yellow-50.border.border-yellow-200.rounded-lg.p-3.text-yellow-800.mb-4 #{mensaje}
+
+      section.card.p-6.space-y-4
+        .flex.justify-between.flex-wrap.items-center.gap-3
+          // Abrir modal nuevo
+          label(
+            for="modal-toggle"
+            class="btn-primary cursor-pointer w-full sm:w-auto sm:px-6 sm:py-2.5 px-4 py-2 text-sm sm:text-base"
+          ) Nuevo Cliente
+
+          input(
+            type="search"
+            class="border rounded-lg px-4 py-2 flex-1 md:max-w-xs"
+            placeholder="Buscar cliente..."
+            oninput="filtrar(this.value)"
+          )
+
+        .overflow-x-auto.mt-4
+          table(class="min-w-full text-sm md:text-base")
+            thead.text-center.text-gray-600
+              tr
+                th.py-2.pr-4 Apellido
+                th.py-2.pr-4 Nombre
+                th.py-2.pr-4 DNI
+                th.py-2.pr-4 Celular
+                th.py-2.pr-4 Email
+                th.py-2.pr-4 Nivel
+                th.py-2.pr-4 Acciones
+            tbody#tabla-body.text-gray-900
+              if usuarios && usuarios.length
+                each u in usuarios
+                  tr.border-t
+                    td.py-2.pr-4= u.apellido || ''
+                    td.py-2.pr-4= u.nombre || ''
+                    td.py-2.pr-4= u.dni || ''
+                    td.py-2.pr-4= u.celular || ''
+                    td.py-2.pr-4= u.username
+                    td.py-2.pr-4= (u.nivel || '').charAt(0).toUpperCase() + (u.nivel || '').slice(1)
+                    td.py-2.flex.gap-2
+                      // Editar: datos en data-*
+                      button.btn-primary(
+                        type="button"
+                        onclick="abrirEditar(this)"
+                        data-id=u._id
+                        data-apellido=u.apellido || ''
+                        data-nombre=u.nombre || ''
+                        data-dni=u.dni || ''
+                        data-celular=u.celular || ''
+                        data-username=u.username || ''
+                        data-nivel=u.nivel || ''
+                        data-disponibilidad=JSON.stringify(u.disponibilidad || [])
+                      ) Editar
+                      form(action=`/usuarios/${u._id}/eliminar` method="POST")
+                        button.btn-danger(type="submit" onclick="return confirm('¿Eliminar este cliente?')") Eliminar
+              else
+                tr
+                  td.py-3.text-center(colspan="7") No hay clientes cargados.
+
+    // Checkbox que controla el modal
+    input#modal-toggle(type="checkbox")
+
+    // Modal alta / edición
+    .modal-overlay.bg-blur.p-4
+      .modal
+        h3.text-lg.font-semibold.text-gray-900.mb-3 Gestión de cliente
+        form#form-cliente(class="space-y-4" method="POST" action="/usuarios")
+          .grid.gap-3(class="md:grid-cols-2")
+            label.block
+              span.text-sm.text-gray-700 Apellido
+              input#inp-apellido(
+                type="text"
+                name="apellido"
+                class="w-full border rounded-lg px-3 py-2 mt-1"
+                placeholder="Ej: Gómez"
+              )
+            label.block
+              span.text-sm.text-gray-700 Nombre
+              input#inp-nombre(
+                type="text"
+                name="nombre"
+                class="w-full border rounded-lg px-3 py-2 mt-1"
+                placeholder="Ej: Lucía"
+              )
+            label.block
+              span.text-sm.text-gray-700 DNI
+              input#inp-dni(
+                type="text"
+                name="dni"
+                class="w-full border rounded-lg px-3 py-2 mt-1"
+                placeholder="Ej: 40123456"
+              )
+            label.block
+              span.text-sm.text-gray-700 Celular
+              input#inp-celular(
+                type="text"
+                name="celular"
+                class="w-full border rounded-lg px-3 py-2 mt-1"
+                placeholder="+54 9 11 ..."
+              )
+            label.block(class="md:col-span-2")
+              span.text-sm.text-gray-700 Email
+              input#inp-username(
+                type="email"
+                name="username"
+                required
+                class="w-full border rounded-lg px-3 py-2 mt-1"
+                placeholder="cliente@mail.com"
+              )
+            label.block
+              span.text-sm.text-gray-700 Nivel
+              select#inp-nivel(name="nivel" class="w-full border rounded-lg px-3 py-2 mt-1")
+                - const niveles = ['','inicial','intermedio','avanzado'];
+                each n in niveles
+                  option(value=n)= n ? n.charAt(0).toUpperCase()+n.slice(1) : 'Seleccionar nivel'
+
+            // Contraseña solo en alta (en edición la ocultamos por JS)
+            label.block#password-wrapper
+              span.text-sm.text-gray-700 Contraseña
+              input#inp-password(
+                type="password"
+                name="password"
+                required
+                class="w-full border rounded-lg px-3 py-2 mt-1"
+                placeholder="********"
+              )
+
+          // Disponibilidad semanal
+          h4.text-sm.font-semibold.text-gray-900.mt-2.mb-1 Disponibilidad semanal
+          p.text-xs.text-gray-600.mb-2 (Opcional) Días y horarios en los que el cliente está disponible.
+          table.disp-table.w-full.mb-2
+            thead
+              tr.text-gray-600
+                th.text-left.py-1.pr-2 Día
+                th.text-left.py-1.pr-2 Desde
+                th.text-left.py-1.pr-2 Hasta
+            tbody#disp-rows
+              tr
+                td.py-1.pr-2
+                  select(name="dias" class="w-full border rounded px-2 py-1")
+                    option(value="") Seleccionar...
+                    option(value="lunes") Lunes
+                    option(value="martes") Martes
+                    option(value="miercoles") Miércoles
+                    option(value="jueves") Jueves
+                    option(value="viernes") Viernes
+                    option(value="sabado") Sábado
+                    option(value="domingo") Domingo
+                td.py-1.pr-2
+                  input(type="time" name="horaDesde" class="w-full border rounded px-2 py-1")
+                td.py-1.pr-2
+                  input(type="time" name="horaHasta" class="w-full border rounded px-2 py-1")
+
+          button(
+            type="button"
+            id="add-disp-row"
+            class="mb-4 px-3 py-1 rounded border border-green-700 text-green-700 text-xs hover:bg-green-50"
+          ) + Agregar franja
+
+          .flex.justify-end.gap-3.pt-3
+            label(for="modal-toggle" class="btn-danger cursor-pointer") Cancelar
+            button.btn-primary(type="submit") Guardar
+
+    footer.py-6.text-center.text-sm
+      .container-mx.px-4.py-6.text-sm.text-gray-700.text-center
+        span(style="color:#d32f2f;background:#ffffffaa;padding:4px 12px;border-radius:6px;")
+          | © RedSoft 2025. Todos los derechos reservados.
+
+    script.
+      // Filtro por texto
+      function filtrar(q){
+        q=(q||'').toLowerCase();
+        const rows=document.querySelectorAll('#tabla-body tr');
+        rows.forEach(tr=>{
+          const txt=tr.innerText.toLowerCase();
+          tr.style.display = txt.includes(q) ? '' : 'none';
+        });
+      }
+
+      // Helpers disponibilidad
+      function crearFilaDisponibilidad(dia, desde, hasta){
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td class="py-1 pr-2">'+
+            '<select name="dias" class="w-full border rounded px-2 py-1">'+
+              '<option value="">Seleccionar...</option>'+
+              '<option value="lunes"'+(dia==='lunes'?' selected':'')+'>Lunes</option>'+
+              '<option value="martes"'+(dia==='martes'?' selected':'')+'>Martes</option>'+
+              '<option value="miercoles"'+(dia==='miercoles'?' selected':'')+'>Miércoles</option>'+
+              '<option value="jueves"'+(dia==='jueves'?' selected':'')+'>Jueves</option>'+
+              '<option value="viernes"'+(dia==='viernes'?' selected':'')+'>Viernes</option>'+
+              '<option value="sabado"'+(dia==='sabado'?' selected':'')+'>Sábado</option>'+
+              '<option value="domingo"'+(dia==='domingo'?' selected':'')+'>Domingo</option>'+
+            '</select>'+
+          '</td>'+
+          '<td class="py-1 pr-2">'+
+            '<input type="time" name="horaDesde" class="w-full border rounded px-2 py-1" value="'+(desde||'')+'">'+
+          '</td>'+
+          '<td class="py-1 pr-2">'+
+            '<input type="time" name="horaHasta" class="w-full border rounded px-2 py-1" value="'+(hasta||'')+'">'+
+          '</td>';
+        return tr;
+      }
+
+      function limpiarDisponibilidad(){
+        const tbody = document.getElementById('disp-rows');
+        if (tbody) tbody.innerHTML = '';
+      }
+
+      // Abrir modal para edición
+      function abrirEditar(btn){
+        const modalToggle = document.getElementById('modal-toggle');
+        const form = document.getElementById('form-cliente');
+        const passWrapper = document.getElementById('password-wrapper');
+        const passInput = document.getElementById('inp-password');
+        const tbody = document.getElementById('disp-rows');
+
+        if (!form || !modalToggle) return;
+
+        // Abrir modal
+        modalToggle.checked = true;
+
+        // Setear acción a editar
+        const id = btn.getAttribute('data-id');
+        form.action = '/usuarios/' + id + '/editar';
+
+        // Campos básicos
+        document.getElementById('inp-apellido').value = btn.getAttribute('data-apellido') || '';
+        document.getElementById('inp-nombre').value   = btn.getAttribute('data-nombre') || '';
+        document.getElementById('inp-dni').value      = btn.getAttribute('data-dni') || '';
+        document.getElementById('inp-celular').value  = btn.getAttribute('data-celular') || '';
+        document.getElementById('inp-username').value = btn.getAttribute('data-username') || '';
+        document.getElementById('inp-nivel').value    = btn.getAttribute('data-nivel') || '';
+
+        // Ocultar contraseña en edición
+        if (passWrapper) passWrapper.style.display = 'none';
+        if (passInput) {
+          passInput.value = '';
+          passInput.required = false;
+        }
+
+        // Disponibilidad
+        if (tbody){
+          limpiarDisponibilidad();
+          let dispo = [];
+          const raw = btn.getAttribute('data-disponibilidad') || '[]';
+          try { dispo = JSON.parse(raw); } catch(e){ dispo = []; }
+
+          if (Array.isArray(dispo) && dispo.length){
+            dispo.forEach(d=>{
+              tbody.appendChild(
+                crearFilaDisponibilidad(d.dia || '', d.desde || '', d.hasta || '')
+              );
+            });
+          } else {
+            tbody.appendChild(crearFilaDisponibilidad('', '', ''));
+          }
+        }
+      }
+
+      // Configurar botón "Nuevo Cliente"
+      (function(){
+        const modalToggle = document.getElementById('modal-toggle');
+        const form = document.getElementById('form-cliente');
+        const passWrapper = document.getElementById('password-wrapper');
+        const passInput = document.getElementById('inp-password');
+        const tbody = document.getElementById('disp-rows');
+        const addBtn = document.getElementById('add-disp-row');
+
+        if (!form || !modalToggle) return;
+
+        // Cuando se abre como "Nuevo Cliente" (label for="modal-toggle")
+        // reseteamos el form al estado inicial por si quedó algo de una edición previa.
+        modalToggle.addEventListener('change', function(){
+          if (this.checked && !form.action.endsWith('/editar')) {
+            form.action = '/usuarios';
+            document.getElementById('inp-apellido').value = '';
+            document.getElementById('inp-nombre').value = '';
+            document.getElementById('inp-dni').value = '';
+            document.getElementById('inp-celular').value = '';
+            document.getElementById('inp-username').value = '';
+            document.getElementById('inp-nivel').value = '';
+
+            if (passWrapper) passWrapper.style.display = 'block';
+            if (passInput){
+              passInput.value = '';
+              passInput.required = true;
+            }
+
+            if (tbody){
+              limpiarDisponibilidad();
+              tbody.appendChild(crearFilaDisponibilidad('', '', ''));
+            }
+          }
+        });
+
+        // Botón para agregar fila de disponibilidad
+        if (addBtn && tbody){
+          addBtn.addEventListener('click', function(){
+            tbody.appendChild(crearFilaDisponibilidad('', '', ''));
+          });
+        }
+      })();

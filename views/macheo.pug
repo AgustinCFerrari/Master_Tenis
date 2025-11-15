@@ -1,0 +1,293 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    title Tenis Master - Macheo de jugadores
+    link(rel="preconnect", href="https://fonts.googleapis.com")
+    link(rel="preconnect", href="https://fonts.gstatic.com", crossorigin="anonymous")
+    link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap", rel="stylesheet")
+    link(href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css", rel="stylesheet")
+    style.
+      html,body{
+        font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
+      }
+      body{
+        background-image:url('/images/cancha1.jpg');
+        background-size:cover;
+        background-position:center;
+        background-repeat:no-repeat;
+        background-attachment:fixed;
+      }
+      .container-mx{max-width:1200px;margin:0 auto;}
+      .card{
+        border:1px solid #e5e7eb;
+        border-radius:1rem;
+        background:#ffffffcc;
+        box-shadow:0 1px 2px rgba(0,0,0,.03);
+      }
+      .btn-primary {
+        background: #2E7D32;
+        color: #fff;
+        border-radius: .75rem;
+        padding: .3rem 1.2rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .4rem;
+      }
+      .btn-secondary{
+        background:#1976D2;
+        color:#fff;
+        border-radius:.75rem;
+        padding:.5rem 1rem;
+        font-weight:600;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap:.4rem;
+      }
+      .tag{
+        background:#F3F4F6;
+        color:#374151;
+        border-radius:9999px;
+        padding:.2rem .6rem;
+        font-size:.7rem;
+      }
+      .topbar{
+        position:sticky;
+        top:0;
+        z-index:40;
+        background:#ffffffcc;
+        border-bottom:1px solid #e5e7eb;
+        backdrop-filter:blur(6px);
+      }
+      .bg-blur{
+        background:#ffffffcc;
+        backdrop-filter:blur(4px);
+        border-radius:.5rem;
+      }
+      .player-row:hover{
+        background:rgba(230,244,234,.9);
+      }
+      .selected{
+        outline:2px solid #2E7D32;
+        background:rgba(230,244,234,.95);
+      }
+
+  body
+    // HEADER
+    header.topbar
+      .container-mx.px-4.py-3.flex.items-center.justify-between
+        img(
+          src="/images/logo-tenis-master.svg",
+          alt="Tenis Master",
+          class="h-9 w-auto",
+          onerror="this.style.display='none'"
+        )
+        button#nav-toggle(
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-menu"
+          class="md:hidden inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm text-gray-700"
+        )
+          svg(
+            xmlns="http://www.w3.org/2000/svg",
+            class="w-5 h-5",
+            fill="none",
+            viewBox="0 0 24 24",
+            stroke="currentColor"
+          )
+            path(
+              stroke-linecap="round",
+              stroke-linejoin="round",
+              stroke-width="2",
+              d="M4 6h16M4 12h16M4 18h16"
+            )
+          span Menú
+
+        nav#nav-menu(
+          class="hidden flex-col gap-4 bg-blur p-4 absolute top-16 left-4 right-4 md:static md:flex md:flex-row md:gap-6 md:bg-transparent md:shadow-none md:p-0"
+        )
+          a(href="/panel" class="hover:text-gray-900 px-2 py-1") Inicio
+          a(href="/reservar" class="hover:text-gray-900 px-2 py-1") Reservar
+          a(href="/panel-reservas" class="hover:text-gray-900 px-2 py-1") Reservas
+          form(action="/logout" method="POST" class="inline")
+            button(type="submit" class="text-red-700 font-medium hover:underline px-2 py-1") Salir
+
+    // CONTENIDO
+    main.container-mx.px-4.py-16
+      h2.text-3xl.font-semibold.text-white.text-center.mb-6 Macheo de jugadores
+
+      section.max-w-4xl.mx-auto
+        .card.p-6.space-y-5
+          h3.text-lg.font-semibold.text-gray-900 Preferencias de búsqueda
+
+          // FORM FILTROS - GET /macheo
+          form#form-filtros(method="GET" action="/macheo" class="grid gap-4 md:grid-cols-3 items-end")
+            // Texto libre: busca por nombre/apellido
+            div(class="col-span-1 md:col-span-2")
+              label.block.text-sm.text-gray-700 Buscar por nombre o apellido
+              input(
+                type="text"
+                name="q"
+                value=filtroTexto || ''
+                placeholder="Ej: Pérez, Juan..."
+                class="mt-1 w-full rounded-lg border-gray-300 px-3 py-2"
+              )
+            // Filtro nivel
+            div(class="col-span-1")
+              label.block.text-sm.text-gray-700 Nivel
+              select(name="nivel" class="mt-1 w-full rounded-lg border-gray-300 px-3 py-2")
+                option(value="") Todos
+                option(value="inicial" selected=filtroNivel === 'inicial') Inicial
+                option(value="intermedio" selected=filtroNivel === 'intermedio') Intermedio
+                option(value="avanzado" selected=filtroNivel === 'avanzado') Avanzado
+            div(class="col-span-1 md:col-span-3 flex gap-2 justify-end")
+              button.btn-secondary(type="submit") Filtrar
+              a.btn-secondary(href="/macheo") Limpiar
+
+          if jugadores && jugadores.length
+            p.text-xs.text-gray-600.mt-1
+              | Se muestran jugadores con disponibilidad cargada. Seleccioná uno, elegí una franja y avanzá a la reserva.
+
+            // LISTADO DE JUGADORES
+            .mt-4.space-y-2
+              each j in jugadores
+                - const nom = (j.nombre || '').trim();
+                - const ape = (j.apellido || '').trim();
+                - const niv = (j.nivel || '').trim();
+                - const dispo = j.disponibilidad || [];
+                .player-row.card.p-4.cursor-pointer(
+                  data-id=j._id
+                  data-nombre=nom
+                  data-apellido=ape
+                  onclick="seleccionarJugador(this)"
+                )
+                  .flex.flex-wrap.justify-between.items-center.gap-4
+                    .flex.flex-col
+                      span.text-sm.text-gray-500 Jugador
+                      span.text-lg.font-semibold.text-gray-900 #{ape} #{nom}
+                      if niv
+                        span.tag.mt-1 Nivel: #{niv.charAt(0).toUpperCase() + niv.slice(1)}
+
+                    .flex-1
+                      if dispo.length
+                        span.text-xs.text-gray-500.block.mb-1 
+                        select.dispo-select(
+                          class="w-full border rounded px-2 py-1 text-xs"
+                          data-jugador-id=j._id
+                        )
+                          option(value="") Seleccionar franja disponible
+                          each d in dispo
+                            if d.dia && d.desde && d.hasta
+                              - const val = d.dia + '|' + d.desde + '|' + d.hasta;
+                              option(value=val)= d.dia + ' ' + d.desde + ' - ' + d.hasta + ' hs'
+                      else
+                        span.text-xs.text-gray-500.block Sin disponibilidad configurada
+
+                    .flex.items-center.gap-2
+                      button.btn-primary(
+                        type="button"
+                        onclick="irAReserva(this)"
+                      )
+                        | Reservar
+
+          else
+            .mt-4.card.p-4.text-center.text-gray-700
+              | No se encontraron jugadores con las condiciones seleccionadas.
+
+          // Info selección
+          .mt-4.flex.items-center.gap-3
+            div#seleccion-info.text-sm.text-gray-700
+              | Seleccioná un jugador y una franja para continuar con la reserva.
+
+    footer.py-6
+      .container-mx.px-4.py-6.text-sm.text-gray-700.text-center
+        span(style="color:#d32f2f;background:#ffffffaa;padding:4px 12px;border-radius:6px;")
+          | © RedSoft 2025. Todos los derechos reservados.
+
+    // SCRIPT
+    script.
+      (function(){
+        // Toggle menú mobile
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        if(navToggle && navMenu){
+          navToggle.addEventListener('click', ()=>{
+            const isHidden = navMenu.classList.contains('hidden');
+            navMenu.classList.toggle('hidden');
+            navToggle.setAttribute('aria-expanded', String(isHidden));
+          });
+        }
+
+        let jugadorSeleccionadoId = null;
+        let jugadorSeleccionadoNombre = '';
+        let jugadorSeleccionadoApellido = '';
+        let franjaSeleccionada = '';
+
+        // Seleccionar fila de jugador
+        window.seleccionarJugador = function(row){
+          const filas = document.querySelectorAll('.player-row');
+          filas.forEach(f=>f.classList.remove('selected'));
+          row.classList.add('selected');
+
+          jugadorSeleccionadoId = row.getAttribute('data-id');
+          jugadorSeleccionadoNombre = row.getAttribute('data-nombre') || '';
+          jugadorSeleccionadoApellido = row.getAttribute('data-apellido') || '';
+
+          const info = document.getElementById('seleccion-info');
+          if(info){
+            info.textContent = 'Jugador seleccionado: ' + jugadorSeleccionadoApellido + ' ' + jugadorSeleccionadoNombre + '. Elegí una franja y confirmá la reserva.';
+          }
+
+          // actualizar franja seleccionada si hay select
+          const sel = row.querySelector('.dispo-select');
+          franjaSeleccionada = sel && sel.value ? sel.value : '';
+        };
+
+        // Al cambiar la disponibilidad en un jugador
+        document.addEventListener('change', function(e){
+          if(e.target && e.target.classList.contains('dispo-select')){
+            const sel = e.target;
+            const card = sel.closest('.player-row');
+            if(!card) return;
+
+            const id = card.getAttribute('data-id');
+            if(jugadorSeleccionadoId === id){
+              franjaSeleccionada = sel.value || '';
+            }
+          }
+        });
+
+        // Ir a reserva desde el botón de cada jugador
+        window.irAReserva = function(btn){
+          const card = btn.closest('.player-row');
+          if(!card) return;
+
+          const jugadorId = card.getAttribute('data-id');
+          const nombre = card.getAttribute('data-nombre') || '';
+          const apellido = card.getAttribute('data-apellido') || '';
+          const sel = card.querySelector('.dispo-select');
+          const val = sel ? sel.value : '';
+
+          let params = 'jugadorId=' + encodeURIComponent(jugadorId)
+                     + '&nombre=' + encodeURIComponent(nombre)
+                     + '&apellido=' + encodeURIComponent(apellido);
+
+          if(val){
+            const parts = val.split('|');
+            if(parts.length === 3){
+              const dia = parts[0];
+              const horaDesde = parts[1];
+              const horaHasta = parts[2];
+              params += '&dia=' + encodeURIComponent(dia)
+                     + '&horaDesde=' + encodeURIComponent(horaDesde)
+                     + '&horaHasta=' + encodeURIComponent(horaHasta);
+            }
+          }
+
+          window.location.href = '/reservar?' + params;
+        };
+      })();

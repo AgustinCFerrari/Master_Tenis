@@ -1,0 +1,68 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    title Tenis Master – Registro
+    link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap")
+    link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css")
+    style.
+      html,body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;}
+      body {
+        background-image: url('/images/fondo.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      .container-mx{max-width:1200px;margin:0 auto;}
+      .card{border:1px solid #e5e7eb;border-radius:1rem;background:#ffffffcc;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+      .btn-primary{background:#2E7D32;color:#fff;border-radius:.75rem;padding:.75rem 1rem;font-weight:600;display:inline-block}
+      .topbar{position:sticky;top:0;z-index:40;background:#ffffffcc;border-bottom:1px solid #e5e7eb}
+  body.bg-gray-50
+    header.topbar
+      .container-mx.px-4.py-3
+        img(src="/images/logo-tenis-master.svg" alt="Tenis Master" class="h-8 md:h-9 w-auto")
+
+    main.container-mx.px-4.py-8
+      section.max-w-md.mx-auto.space-y-6
+        .card.p-6.space-y-4
+          .text-center.space-y-1
+            h1.text-2xl.font-semibold.text-gray-900 Crear cuenta
+            p.text-gray-600.text-sm Completar los datos del jugador.
+
+          //- Formulario de registro público
+          form(action="/registro" method="POST" class="space-y-4")
+            label.block
+              span.text-sm.text-gray-700 Apellido
+              input(name="apellido" type="text" placeholder=" Tu apellido" class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-700 focus:border-green-700")
+            label.block
+              span.text-sm.text-gray-700 Nombre
+              input(name="nombre" type="text" placeholder=" Tu nombre" class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-700 focus:border-green-700")
+            label.block
+              span.text-sm.text-gray-700 DNI Nº
+              input(name="dni" type="text" placeholder=" Ej. 40123456" class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-700 focus:border-green-700")
+            label.block
+              span.text-sm.text-gray-700 Celular
+              input(name="celular" type="text" placeholder=" Ej. +54 9 11 ..." class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-700 focus:border-green-700")
+
+            label.block
+              span.text-sm.text-gray-700 Email (usuario)
+              input(name="username" type="email" required placeholder=" tu@correo.com" class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-700 focus:border-green-700")
+            label.block
+              span.text-sm.text-gray-700 Contraseña
+              input(name="password" type="password" required placeholder=" ********" class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-700 focus:border-green-700")
+
+            label.block
+              span.text-sm.text-gray-700 Nivel del jugador (opcional)
+              select(name="nivel" class="mt-1 w-full rounded-lg border-gray-300 bg-white focus:ring-green-700 focus:border-green-700")
+                option(value="") Seleccionar nivel
+                option(value="inicial") Inicial
+                option(value="intermedio") Intermedio
+                option(value="avanzado") Avanzado
+
+            button.btn-primary(type="submit") Registrar
+
+    footer.border-t
+      .container-mx.px-4.py-6.text-sm.text-gray-700.text-center
+        span(style="color:#d32f2f; background:#ffffffaa; padding:4px 12px; border-radius:6px;")
+          | © RedSoft 2025. Todos los derechos reservados.

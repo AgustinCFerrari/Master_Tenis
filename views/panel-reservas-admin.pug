@@ -1,0 +1,82 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    title Tenis Master – Panel de Reservas
+    link(href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet")
+    style.
+      html,body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;}
+      body{
+            background-image:url('images/cancha1.jpg');
+            background-size:cover;
+            background-position:center;
+            background-repeat:no-repeat;
+            background-attachment:fixed;
+      }
+      .container-mx{max-width:1200px;margin:0 auto;}
+      .card{border:1px solid #e5e7eb;border-radius:1rem;background:#ffffffcc;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+      .topbar{position:sticky;top:0;z-index:40;background:#ffffffcc;border-bottom:1px solid #e5e7eb;}
+      .badge{display:inline-block;padding:.15rem .5rem;border-radius:9999px;font-size:.7rem;background:#e5e7eb;color:#374151;}
+      .bg-blur{background:#ffffffcc;backdrop-filter:blur(4px);border-radius:.5rem;}
+  body
+    header.topbar.bg-blur
+      .container-mx.px-4.py-3.flex.items-center.justify-between
+        img(src="/images/logo-tenis-master.svg" alt="Tenis Master" class="h-8 md:h-9 w-auto")
+        nav.flex.items-center.gap-3.text-sm
+          a(href="/panel" class="px-3 py-1 rounded bg-gray-200") Inicio
+          a(href="/reservar" class="px-3 py-1 rounded bg-green-700 text-white") Nueva reserva
+          form(action="/logout" method="POST")
+            button(type="submit" class="px-3 py-1 text-red-700 hover:underline") Salir
+
+    main.container-mx.px-4.py-8
+      h2(class="text-3xl font-semibold text-white text-center block mb-6") Panel de Reservas
+      
+      .card.p-4
+        if reservas && reservas.length
+          table(class="min-w-full text-sm")
+            thead
+              tr.text-gray-600
+                th.py-2.pr-1.text-left Fecha
+                th.py-2.pr-1.text-left Cancha
+                th.py-2.pr-1.text-left Inicio
+                th.py-2.pr-1.text-left Fin
+                th.py-2.pr-1.text-left Cliente
+                th.py-2.pr-1.text-left Estado
+                th.py-2.pr-1.text-left Acciones
+            tbody
+              each r in reservas
+                tr.border-t
+                  td.py-2.pr-1= (new Date(r.fecha)).toLocaleDateString('es-AR')
+                  td.py-2.pr-1= r.cancha
+                  td.py-2.pr-1= r.horaInicio
+                  td.py-2.pr-1= r.horaFin
+                  td.py-2.pr-1  
+                    = (r.jugadorId && (r.jugadorId.apellido || '')) + ' ' + (r.jugadorId && (r.jugadorId.nombre || ''))
+                  td.py-2.pr-1
+                    span(class=(r.estado === 'activa' ? 'badge bg-green-100 text-green-800' : 'badge'))
+                      = r.estado
+                  td.py-2.pr-1
+                    if r.estado === 'activa'
+                      //- Botón de pago (lleva a la vista pago.pug)
+                      a(
+                        href=`/reservas/${r._id}/pago`
+                        class="text-blue-700 text-xs mr-3 hover:underline"
+                      ) Pagar
+
+                      //- Botón cancelar solo si está activa
+                      form(action=`/reservas/${r._id}/eliminar` method="POST" style="display:inline-block;")
+                        button(
+                          type="submit"
+                          class="text-red-700 text-xs hover:underline"
+                          onclick="return confirm('¿Cancelar esta reserva?')"
+                        ) Cancelar
+                    else
+                      //- Reservas pagadas u otros estados: sin acciones
+        else
+          p.text-gray-600 No hay reservas cargadas para hoy.
+
+    footer.py-6
+      .container-mx.px-4.py-6.text-sm.text-gray-700.text-center
+        span(style="color:#d32f2f;background:#ffffffcc;padding:4px 12px;border-radius:6px;")
+          | © RedSoft 2025. Todos los derechos reservados.

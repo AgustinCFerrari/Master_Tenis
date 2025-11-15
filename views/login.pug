@@ -1,0 +1,63 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    title Tenis Master – Iniciar sesión
+    link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet")
+    link(href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet")
+    style.
+      html,body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;}
+      body {
+        background-image: url('/images/fondo.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      .container-mx{max-width:1200px;margin:0 auto;}
+      .card{border:1px solid #e5e7eb;border-radius:1rem;background:#ffffffcc;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+      .btn-primary{background:#2E7D32;color:#fff;border-radius:.75rem;padding:.75rem 1rem;font-weight:600;display:inline-block}
+      .btn-secondary{background:#1976D2;color:#fff;border-radius:.75rem;padding:.75rem 1rem;font-weight:600;display:inline-block}
+      .topbar{position:sticky;top:0;z-index:40;background:#ffffffcc;border-bottom:1px solid #e5e7eb}
+
+  body.bg-gray-50
+    header.topbar
+      .container-mx.px-4.py-3.flex.items-center.justify-between
+        img(src="/images/logo-tenis-master.svg" alt="Tenis Master" class="h-8 md:h-9 w-auto" onerror="this.style.display='none'")
+
+    main.container-mx.px-4.py-8
+      section.max-w-md.mx-auto.space-y-6
+        .card.p-6.space-y-5
+          .text-center.space-y-1
+            h1.text-2xl.font-semibold.text-gray-900 Iniciar sesión
+            p.text-gray-600.text-sm Ingresá tu correo y contraseña.
+
+          if mensaje
+            .text-sm.text-red-700.bg-red-50.border.border-red-200.rounded-lg.p-3 #{mensaje}
+
+          form(action="/login" method="POST" class="space-y-4" novalidate)
+            label.block
+              span.text-sm.text-gray-700 Email
+              input.mt-1.w-full.rounded-lg.border-gray-300(
+                type="email" name="username" required autocomplete="username" placeholder="tu@correo.com"
+                class="focus:ring-green-700 focus:border-green-700")
+
+            label.block
+              span.text-sm.text-gray-700 Contraseña
+              input.mt-1.w-full.rounded-lg.border-gray-300(
+                type="password" name="password" required autocomplete="current-password" placeholder="********"
+                class="focus:ring-green-700 focus:border-green-700")
+
+            .flex.items-center.justify-between.text-sm
+              label.inline-flex.items-center.gap-2
+                input.rounded.border-gray-300.text-green-700(type="checkbox" name="remember" value="1" class="focus:ring-green-700")
+                span.text-gray-700 Recordarme
+          
+            .grid.gap-3.pt-2
+              button.btn-primary.text-center(type="submit") Ingresar
+              a.btn-secondary.text-center(href="/registro") Crear cuenta
+
+    footer.border-t
+      .container-mx.px-4.py-6.text-sm.text-gray-700.text-center
+        span(style="color:#d32f2f; background:#ffffffaa; padding:4px 12px; border-radius:6px;")
+          | © RedSoft 2025. Todos los derechos reservados.

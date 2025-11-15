@@ -1,0 +1,16 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    title Error de inicio de sesión
+    link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css")
+  body(class="min-h-screen bg-gray-50 flex items-center justify-center")
+    main(class="max-w-md w-full bg-white rounded-xl shadow p-6 space-y-4")
+      h1(class="text-xl font-semibold text-red-700") Error al iniciar sesión
+      p(class="text-gray-700")
+        | #{mensaje || 'Usuario y/o contraseña inválidos.'}
+      .flex.items-center.gap-3
+        a(href="/", class="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium") Volver a login
+        a(href="/registro", class="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-medium") Crear cuenta
+
