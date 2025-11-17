@@ -10,7 +10,9 @@ import {
   apiNombresPorApellido,
   panelReservas,
   mostrarPago,
+  historialReservas,
   pagarReserva
+
 } from '../controllers/reservaController.js';
 
 const router = express.Router();
@@ -34,6 +36,8 @@ router.get('/api/clientes/nombres', apiNombresPorApellido);
 router.get('/reservas/:id/pago', requerirLogin, autorizar(['administrador','empleado','cliente']), mostrarPago);
 // Aplicar el pago a la reserva (POST)
 router.post('/reservas/:id/pagar', requerirLogin, autorizar(['administrador','empleado','cliente']), pagarReserva);
+// Historial de reservas del cliente
+router.get('/historial-reservas', requerirLogin, autorizar(['administrador', 'empleado']), historialReservas);
 
 export default router;
 

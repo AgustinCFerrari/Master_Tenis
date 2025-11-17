@@ -1,0 +1,73 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    title Tenis Master – Historial de Reservas
+    link(href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet")
+    style.
+      html,body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;}
+      body{
+            background-image:url('images/cancha1.jpg');
+            background-size:cover;
+            background-position:center;
+            background-repeat:no-repeat;
+            background-attachment:fixed;
+      }
+      .bg-blur{
+        backdrop-filter:blur(12px);
+        background-color:#FFFFFFAA;
+        border-bottom:1px solid rgba(255,255,255,0.12);
+      }
+      .container-mx{
+        max-width:1100px;
+        margin:0 auto;
+      }
+      .card{
+        background:#FFFFFFAA;
+        border-radius:16px;
+        border:1px solid rgba(255,255,255,0.7);
+        box-shadow:0 18px 45px rgba(0,0,0,0.35);
+      }
+
+  body
+    header.topbar.bg-blur
+      .container-mx.px-4.py-3.flex.items-center.justify-between
+        img(src="/images/logo-tenis-master.svg" alt="Tenis Master" class="h-8 md:h-9 w-auto")
+        nav.flex.items-center.gap-3.text-sm
+          a(href="/panel-reservas" class="px-3 py-1 rounded bg-gray-200") Volver al panel
+          form(action="/logout" method="POST")
+            button(type="submit" class="px-3 py-1 text-red-700 hover:underline") Salir
+
+    main.container-mx.px-4.py-8
+      h2.text-3xl.font-semibold.text-white.text-center.mb-6 Historial de Reservas
+
+      .card.p-4
+        if reservas && reservas.length
+          table.min-w-full.text-sm
+            thead
+              tr.text-gray-600
+                th.py-2.text-left Fecha
+                th.py-2.text-left Cancha
+                th.py-2.text-left Inicio
+                th.py-2.text-left Fin
+                th.py-2.text-left Cliente
+                th.py-2.text-left Estado
+            tbody
+              each r in reservas
+                tr.border-t
+                  td.py-2= (new Date(r.fecha)).toLocaleDateString('es-AR')
+                  td.py-2= r.cancha
+                  td.py-2= r.horaInicio
+                  td.py-2= r.horaFin
+                  - const ape = (r.jugadorId && (r.jugadorId.apellido || '')) || ''
+                  - const nom = (r.jugadorId && (r.jugadorId.nombre || '')) || ''
+                  td.py-2= ape + ' ' + nom
+                  td.py-2= r.estado
+        else
+          p.text-gray-600 No hay reservas pasadas registradas.
+
+    footer.py-6
+      .container-mx.px-4.py-6.text-sm.text-gray-700.text-center
+        span(style="color:#d32f2f;background:#ffffffcc;padding:4px 12px;border-radius:6px;")
+          | © RedSoft 2025. Todos los derechos reservados.

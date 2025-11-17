@@ -267,7 +267,14 @@ export const listarReservas = async (req, res) => {
     const userId = req.session?.usuario?.id;
     const filtro = (rol === 'cliente') ? { jugadorId: userId } : {};
 
-    let query = Reserva.find(filtro).sort({ fecha: 1, horaInicio: 1 });
+    // Mostrar solo reservas CON FECHA HOY O FUTURA
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    let query = Reserva.find({
+      ...filtro,
+      fecha: { $gte: hoy }
+    }).sort({ fecha: 1, horaInicio: 1 });
 
     // Para admin / empleado: se necesitan los datos del cliente
     if (rol !== 'cliente') {
@@ -440,6 +447,37 @@ export const mostrarPago = async (req, res) => {
   } catch (err) {
     console.error("Error mostrarPago:", err);
     res.status(500).send("Error interno.");
+  }
+};
+
+// ---------- HISTORIAL DE RESERVAS (ADMIN/EMPLEADO) ----------
+export const historialReservas = async (req, res) => {
+  try {
+    const rol = req.session?.usuario?.rol;
+    if (rol !== 'administrador' && rol !== 'empleado') {
+      return res.status(403).render('error-autorizacion', { mensaje: "No tenés acceso al historial." });
+    }
+
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const reservasPasadas = await Reserva.find({
+      fecha: { $lt: hoy }
+    })
+      .populate('jugadorId', 'nombre apellido username')
+      .sort({ fecha: -1, horaInicio: 1 })
+      .lean();
+
+    return res.render('historial-reservas-admin', {
+      usuario: req.session.usuario,
+      reservas: reservasPasadas
+    });
+
+  } catch (err) {
+    console.error("Error historialReservas:", err);
+    return res.status(500).render('error-autorizacion', {
+      mensaje: "Error al cargar el historial."
+    });
   }
 };
 

@@ -2,14 +2,16 @@
 
 ## Descripción general
 
-**Tenis Master** es una aplicación web desarrollada por **Redsoft** como parte del Proyecto Integrador (Comisión D).  
-El sistema permite la **gestión integral de reservas de canchas de tenis**, el **matcheo de jugadores**, el **control administrativo** y la **gestión de clientes**, con diferentes roles de acceso (Administrador, Empleado y Cliente).
+Aplicación web para la gestión de reservas de canchas de tenis, pagos y administración de clientes/jugadores.
 
-La interfaz está diseñada para ser **totalmente responsiva**, permitiendo su uso tanto en **PC** como en **dispositivos móviles**.  
-- Los roles **Administrador** y **Empleado** están optimizados para escritorio.  
-- El rol **Cliente** está pensado para una experiencia fluida en móviles.
+Permite:
 
----
+- Registro y login de personas usuarias con distintos roles (`administrador`, `empleado`, `cliente`).
+- Gestión de clientes (alta, edición, baja).
+- Reserva de canchas con control de solapamientos y horarios válidos.
+- Panel de reservas diferenciado para clientes vs. administración.
+- Registro de pagos asociados a una reserva.
+- Macheo de jugadores según nivel y disponibilidad horaria.---
 
 ## Integrantes del equipo Redsoft
 
@@ -22,7 +24,7 @@ La interfaz está diseñada para ser **totalmente responsiva**, permitiendo su u
 ## Enlaces del proyecto
 
 - **Repositorio GitHub:**  
-  [https://github.com/AgustinCFerrari/Proyecto_Integrador](https://github.com/AgustinCFerrari/Proyecto_Integrador)
+  [https://github.com/AgustinCFerrari/Tenis_Master](https://github.com/AgustinCFerrari/Proyecto_Integrador)
 
 - **Demo en Vercel:**  
   [https://proyecto-integrador-rose-ten.vercel.app/](https://proyecto-integrador-rose-ten.vercel.app/)
@@ -35,98 +37,72 @@ La interfaz está diseñada para ser **totalmente responsiva**, permitiendo su u
 |-----|--------------------|-------------|
 | Administrador | `admin@mail.com` | `12345` |
 | Empleado | `usuario@mail.com` | `12345` |
-| Cliente | `cliente@mail.com` | `12345` |
+| Cliente | nombre_del cliente@mail.com` | `12345` |
 
 > Los nuevos clientes pueden **autoregistrarse** desde la opción **“Crear cuenta”**.
 
 ---
 
-## Flujo principal del sistema
+## Estructura del proyecto
 
-### Inicio y autenticación
-- Si el usuario no está logueado, el sistema redirige automáticamente de `index.html` a `login.html`.
-- Dependiendo del rol, se accede a distintas vistas y funcionalidades.
-
-### Registro de nuevos clientes
-- En “Crear cuenta” se completa un formulario con los datos personales.  
-- Los empleados o administradores también pueden registrar clientes desde el **CRUD de Clientes**.
-
-### Panel de inicio (Cliente)
-El cliente puede:
-- Reservar una cancha.  
-- Realizar macheo con otros jugadores de su nivel.  
-- Consultar sus reservas.  
-- Cerrar sesión mediante el botón “Salir”.
-
-### Reservas
-Desde la opción **Reservar**, el usuario ingresa:
-- Fecha.  
-- Hora de inicio y finalización.  
-- Número de cancha.
-
-Tras completar la información:
-- Se accede a **pago.html**, donde se confirman los datos y se selecciona el método de pago.  
-- Las reservas no pagadas aparecen como **pendientes** en “Mis reservas”.
-
-### Macheo de jugadores
-El cliente puede elegir su nivel y disponibilidad.  
-El sistema sugiere:
-- Rival compatible.  
-- Cancha y horario.  
-- Al confirmar, se genera una reserva pendiente de pago.
+```text
+.
+├─ readme.md               # Este archivo
+├─ index.js                # Punto de entrada de la app
+├─ .env                    # Variables de entorno (NO subir al repo)
+├─ package.json            # Dependencias y scripts npm
+├─ controllers/            # Controladores (lógica de negocio)
+│  ├─ panelController.js
+│  ├─ reservaController.js
+│  └─ usuarioController.js
+├─ middlewares/
+│  └─ autorizar.js         # Middleware de login + autorización por rol
+├─ models/                 # Modelos de Mongoose
+│  ├─ Pago.js
+│  ├─ Reserva.js
+│  └─ Usuario.js
+├─ routes/                 # Definición de rutas Express
+│  ├─ appRoutes.js
+│  ├─ macheoRoutes.js
+│  ├─ reservaRoutes.js
+│  └─ usuarioRoutes.js
+├─ public/                 # Archivos estáticos (imágenes, CSS, etc.)
+└─ views/                  # Vistas Pug
+   ├─ login.pug
+   ├─ registro.pug
+   ├─ panel.pug
+   ├─ usuarios.pug
+   ├─ reservar.pug
+   ├─ historial-reservas-admin.pug
+   ├─ panel-reservas-admin.pug
+   ├─ panel-reservas-cliente.pug
+   ├─ pago.pug
+   ├─ macheo.pug
+   ├─ error-autorizacion.pug
+   └─ error-login.pug
 
 ---
 
 ## Funcionalidades por rol
 
-### Rol Empleado
+### Rol Administrador y Empleado
 - Tiene un panel similar al cliente, pero con acceso adicional a:
-  - **Gestión de Clientes (CRUD):** alta, baja, búsqueda y modificación.  
-- Puede registrar reservas o clientes de manera presencial o telefónica.  
+  - **Gestión de Clientes (CRUD):** búsqueda, alta, modificación y baja (únicamente como administrador).  
+- Pueden, de manera presencial o telefónica: registrar y editar clientes, machear jugadores, reservar, pagar y cancelar reservas.  
 
-### Rol Administrador
-- Accede al **Panel de control**, con módulos específicos:
-  - **Dashboard:** resumen diario de movimientos.  
-  - **Calendario:** visualización de ocupación semanal por cancha.  
-  - **Reservas:** listado general de reservas.  
-  - **Reportes:** gráficos de ocupación e ingresos.  
-  - **Usuarios:** listado con nivel, última reserva y cantidad de reservas.  
-  - **Gestión de Clientes:** acceso al mismo CRUD que los empleados.
-
----
-
-## Estructura del Front
-
-- **index.html** – pantalla principal.  
-- **login.html** – inicio de sesión.  
-- **registro.html** – alta de nuevos clientes.  
-- **reservar.html** – registro de reservas.  
-- **pago.html** – confirmación y pago.  
-- **mis-reservas.html** – listado de reservas.  
-- **macheo.html** – emparejamiento de jugadores.  
-- **admin-dashboard.html** – panel del administrador.  
-- **admin-reservas.html**, **admin-calendario.html**, **admin-clientes.html** – vistas de gestión administrativa.
-
----
-
-## Capturas de pantalla (resumen visual)
-
-*(Las imágenes se encuentran documentadas en el archivo “Capturas de pantalla.docx”)*  
-- Login y registro de usuarios.  
-- Panel de inicio del cliente.  
-- Formulario de reservas y pantalla de pago.  
-- Macheo de jugadores.  
-- CRUD de clientes.  
-- Dashboard del administrador, calendario y reportes.
-
+### Rol Cliente
+- Puede auto-registrarse, registrar y pagar reservas, machearse con jugadores y cancelar reservas.
 ---
 
 ## Tecnologías utilizadas
 
-- **HTML5**, **CSS3**, **JavaScript**  
-- **TailwindCSS** (maquetado y responsive design)  
-- **LocalStorage** (manejo de sesión y datos simulados)  
-- **Vercel** (deploy del frontend)
+- **Node.js** + **Express** (servidor HTTP y routing)
+- **MongoDB** + **Mongoose** (base de datos y ORM)
+- **Pug** (motor de vistas / templates)
+- **express-session** (sesiones de usuario)
+- **dotenv** (gestión de variables de entorno)
+- **bcrypt** (hash de contraseñas)
+- Estilos: HTML + TailwindCSS vía CDN (principalmente en vistas como `macheo.pug`)
 
 ---
 
@@ -134,9 +110,12 @@ El sistema sugiere:
 
 1. Clonar el repositorio:
    ```bash
-   git clone https://github.com/AgustinCFerrari/Proyecto_Integrador.git
+   git clone https://github.com/AgustinCFerrari/Master_Tenis.git
    ```
-2. Abrir el archivo `index.html` en el navegador.  
+2. Ejecutar en el bash:
+   ```bash
+   npm start
+   ```
 3. Utilizar las credenciales de prueba según el rol deseado.
 
 ---

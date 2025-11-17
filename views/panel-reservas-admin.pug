@@ -15,21 +15,33 @@ html(lang="es")
             background-attachment:fixed;
       }
       .container-mx{max-width:1200px;margin:0 auto;}
-      .card{border:1px solid #e5e7eb;border-radius:1rem;background:#ffffffcc;box-shadow:0 1px 2px rgba(0,0,0,.03);}
-      .topbar{position:sticky;top:0;z-index:40;background:#ffffffcc;border-bottom:1px solid #e5e7eb;}
+      .card{border:1px solid #e5e7eb;border-radius:1rem;background:#ffffffaa;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+      .topbar{position:sticky;top:0;z-index:40;background:#ffffffaa ;border-bottom:1px solid #e5e7eb;}
       .badge{display:inline-block;padding:.15rem .5rem;border-radius:9999px;font-size:.7rem;background:#e5e7eb;color:#374151;}
-      .bg-blur{background:#ffffffcc;backdrop-filter:blur(4px);border-radius:.5rem;}
+      .bg-blur{background:#ffffffaa ;backdrop-filter:blur(4px);border-radius:.5rem;}
   body
     header.topbar.bg-blur
       .container-mx.px-4.py-3.flex.items-center.justify-between
         img(src="/images/logo-tenis-master.svg" alt="Tenis Master" class="h-8 md:h-9 w-auto")
-        nav.flex.items-center.gap-3.text-sm
-          a(href="/panel" class="px-3 py-1 rounded bg-gray-200") Inicio
-          a(href="/reservar" class="px-3 py-1 rounded bg-green-700 text-white") Nueva reserva
-          form(action="/logout" method="POST")
-            button(type="submit" class="px-3 py-1 text-red-700 hover:underline") Salir
+        // Botón hamburguesa
+        button#nav-toggle(class="md:hidden inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm bg-blur text-gray-700" aria-expanded="false" aria-controls="nav-menu")
+          svg(xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16")
+          | Menú
 
-    main.container-mx.px-4.py-8
+        // Menú
+        nav#nav-menu(
+          class="hidden bg-transparent p-4 absolute top-16 left-4 right-4 md:static md:flex md:flex-row md:gap-6 md:bg-transparent md:shadow-none md:p-0"
+        )
+          .flex.flex-row.items-center.gap-4
+            a(href="/panel" class="px-2 py-1 rounded bg-blur") Inicio
+            a(href="/reservar" class="px-2 py-1 rounded-lg bg-green-700 text-white") Reservar
+            a(href="/historial-reservas" class="px-2 py-1 rounded-lg bg-blue-700 text-white") Historial
+            form(action="/logout" method="POST")
+              button(type="submit" class="text-red-700 rounded bg-blur font-medium hover:underline px-2 py-1") Salir
+
+
+    main.container-mx.px-4.py-16
       h2(class="text-3xl font-semibold text-white text-center block mb-6") Panel de Reservas
       
       .card.p-4
@@ -80,3 +92,16 @@ html(lang="es")
       .container-mx.px-4.py-6.text-sm.text-gray-700.text-center
         span(style="color:#d32f2f;background:#ffffffcc;padding:4px 12px;border-radius:6px;")
           | © RedSoft 2025. Todos los derechos reservados.
+    script.
+      // Menú responsive
+      (function(){
+        var btn=document.getElementById('nav-toggle');
+        var menu=document.getElementById('nav-menu');
+        if(btn && menu){
+          btn.addEventListener('click',()=> {
+            var isHidden = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden');
+            btn.setAttribute('aria-expanded', String(isHidden));
+          });
+        }
+      })();
