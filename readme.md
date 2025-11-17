@@ -86,27 +86,38 @@ Permite:
 ## Funcionalidades por rol
 
 ### Rol Administrador y Empleado
-- Tiene un panel similar al cliente, pero con acceso adicional a:
-  - **Gestión de Clientes (CRUD):** búsqueda, alta, modificación y baja (únicamente como administrador).  
-- Pueden, de manera presencial o telefónica: registrar y editar clientes, machear jugadores, reservar, pagar y cancelar reservas.  
+
+- CRUD de clientes.
+- Registro, edición y cancelación de reservas.
+- Registro de pagos.
+- Macheo de jugadores.
+- Historial de reservas (reservas con fecha anterior a hoy).
+- Visualización de reservas futuras del sistema.
 
 ### Rol Cliente
-- Puede auto-registrarse, registrar y pagar reservas, machearse con jugadores y cancelar reservas.
+
+- Autoregistro.
+- Reserva y pago de turnos.
+- Cancelación de reservas propias.
+- Macheo según nivel.
+- Visualización de sus próximas reservas.
+
 ---
 
 ## Tecnologías utilizadas
 
-- **Node.js** + **Express** (servidor HTTP y routing)
-- **MongoDB** + **Mongoose** (base de datos y ORM)
-- **Pug** (motor de vistas / templates)
-- **express-session** (sesiones de usuario)
-- **dotenv** (gestión de variables de entorno)
-- **bcrypt** (hash de contraseñas)
-- Estilos: HTML + TailwindCSS vía CDN (principalmente en vistas como `macheo.pug`)
+- Node.js + Express
+- MongoDB Atlas + Mongoose
+- Pug (motor de plantillas)
+- express-session
+- connect-mongo (almacenamiento de sesiones en MongoDB)
+- dotenv (variables de entorno)
+- bcrypt (hash de contraseñas)
+- TailwindCSS CDN para estilos
 
 ---
 
-## Cómo ejecutar el proyecto
+## Cómo ejecutar el proyecto en forma local
 
 1. Clonar el repositorio:
    ```bash

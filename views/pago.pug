@@ -108,22 +108,6 @@ html(lang="es")
                 placeholder="cliente@mail.com"
               )
 
-            div
-              span.block.text-sm.text-gray-700 Correo electrónico
-              input#userEmail.mt-1.w-full.rounded-lg.border-gray-300.bg-gray-100.text-gray-700.cursor-not-allowed(
-                type="email"
-                readonly
-                value=(
-                  reserva && reserva.clienteEmail
-                    ? reserva.clienteEmail
-                    : (reserva && reserva.jugadorId && reserva.jugadorId.username
-                        ? reserva.jugadorId.username
-                        : (usuario && usuario.username ? usuario.username : '')
-                      )
-                )
-                placeholder="cliente@mail.com"
-              )
-
           // Detalle de la reserva
           div(class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-gray-700 mt-2")
             .card.p-4
