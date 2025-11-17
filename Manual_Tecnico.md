@@ -300,13 +300,11 @@ Aquí tienes el contenido solicitado en formato Markdown, organizado por seccion
 - Crear instancia de Express.
 - Configurar sesión:
 
-```js
 app.use(session({
   secret: 'un-secreto-seguro',
   resave: false,
   saveUninitialized: false
 }));
-```
 
 - Pasar `req.session.usuario` a `res.locals.usuario` para todas las vistas.
 - Configurar middlewares estándar:
