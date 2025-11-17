@@ -1,6 +1,4 @@
 
----
-
 ## MANUAL_TECNICO.md
 
 ```markdown
@@ -453,4 +451,13 @@ Para extender o mantener la aplicación:
 Conexión a Mongo:
 
 Tras conectar, invoca cancelarReservasVencidas().
+
+## 10. Enlaces del proyecto
+
+- **Repositorio GitHub:**  
+  [https://github.com/AgustinCFerrari/Tenis_Master](https://github.com/AgustinCFerrari/Proyecto_Integrador)
+
+- **Deploy en Render**  
+  [https://master-tenis.onrender.com/](https://master-tenis.onrender.com/)
+
 

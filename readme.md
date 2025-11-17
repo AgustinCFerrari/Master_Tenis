@@ -26,8 +26,8 @@ Permite:
 - **Repositorio GitHub:**  
   [https://github.com/AgustinCFerrari/Tenis_Master](https://github.com/AgustinCFerrari/Proyecto_Integrador)
 
-- **Demo en Vercel:**  
-  [https://proyecto-integrador-rose-ten.vercel.app/](https://proyecto-integrador-rose-ten.vercel.app/)
+- **Deploy en Render**  
+  [https://master-tenis.onrender.com/](https://master-tenis.onrender.com/)
 
 ---
 
