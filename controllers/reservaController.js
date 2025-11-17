@@ -58,6 +58,12 @@ export const mostrarFormularioReserva = async (req, res) => {
     const sesion = req.session?.usuario;
     if (!sesion) return res.redirect('/');
 
+    // Si el rol es cliente, cargamos el usuario completo desde BD
+    let usuarioCompleto = sesion;
+    if (sesion.rol === 'cliente') {
+      usuarioCompleto = await Usuario.findById(sesion.id).lean();
+    }
+
     const { jugadorId, nombre, apellido, dia, horaDesde, horaHasta } = req.query;
 
     let jugadorPreseleccionado = null;
@@ -98,9 +104,9 @@ export const mostrarFormularioReserva = async (req, res) => {
     };
 
     return res.render('reservar', {
-      usuario: sesion,
+      usuario: usuarioCompleto,
       apellidos: apellidosUnicos,
-      jugadorPreseleccionado,           // lo dejamos por si querés usarlo más adelante
+      jugadorPreseleccionado,       
       macheo,
       sugerido,
       vieneDeMacheo: Boolean(jugadorId || nombre || apellido || dia || horaDesde || horaHasta),
