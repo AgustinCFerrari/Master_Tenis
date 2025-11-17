@@ -3,6 +3,7 @@ import express from 'express';
 import session from 'express-session';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import MongoStore from 'connect-mongo';
 
 // Importamos las rutas definidas en otros archivos.
 import appRoutes from './routes/appRoutes.js';
@@ -51,7 +52,14 @@ app.set('views', './views');
 app.use(session({
   secret: 'un-secreto-seguro',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: 'sessions'
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 2 // 2 horas
+  }
 }));
 
 // Pasar datos del usuario logueado a todas las vistas
