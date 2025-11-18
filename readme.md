@@ -24,7 +24,7 @@ Permite:
 ## Enlaces del proyecto
 
 - **Repositorio GitHub:**  
-  [https://github.com/AgustinCFerrari/Tenis_Master](https://github.com/AgustinCFerrari/Proyecto_Integrador)
+  [https://github.com/AgustinCFerrari/Tenis_Master](https://github.com/AgustinCFerrari/Tenis_Master)
 
 - **Deploy en Render**  
   [https://master-tenis.onrender.com/](https://master-tenis.onrender.com/)
