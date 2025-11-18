@@ -37,7 +37,7 @@ Permite:
 |-----|--------------------|-------------|
 | Administrador | `admin@mail.com` | `12345` |
 | Empleado | `usuario@mail.com` | `12345` |
-| Cliente | nombre_del cliente@mail.com` | `12345` |
+| Cliente | nombre_del_cliente@mail.com` | `12345` |
 
 > Los nuevos clientes pueden **autoregistrarse** desde la opción **“Crear cuenta”**.
 
