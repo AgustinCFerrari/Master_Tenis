@@ -49,7 +49,7 @@ Permite:
 .
 ├─ readme.md               # Este archivo
 ├─ index.js                # Punto de entrada de la app
-├─ .env                    # Variables de entorno (NO subir al repo)
+├─ .env                    # Variables de entorno 
 ├─ package.json            # Dependencias y scripts npm
 ├─ controllers/            # Controladores (lógica de negocio)
 │  ├─ panelController.js
